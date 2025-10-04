@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "strava": {
+      "command": "npx",
+      "args": ["-y", "@strava/mcp-server"],
+      "env": {
+        "STRAVA_CLIENT_ID": "",
+        "STRAVA_CLIENT_SECRET": "",
+        "STRAVA_REDIRECT_URI": "http://localhost:3000/callback"
+      }
+    }
+  }
+}
