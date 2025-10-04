@@ -1,6 +1,7 @@
 """Training plan data models."""
 
 from datetime import date
+
 from pydantic import BaseModel, Field
 
 

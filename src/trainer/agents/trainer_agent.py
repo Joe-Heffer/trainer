@@ -1,7 +1,8 @@
 """Main trainer agent using Google ADK."""
 
-from google import genai
 from typing import Any
+
+from google import genai
 
 
 class TrainerAgent:

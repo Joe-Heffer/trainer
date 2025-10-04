@@ -1,7 +1,5 @@
 """Tests for data models."""
 
-from datetime import datetime
-
 from trainer.models import Workout, WorkoutAnalysis
 
 
