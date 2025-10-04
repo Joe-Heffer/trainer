@@ -1,187 +1,208 @@
 # Contributing to trAIner
 
-Thank you for your interest in contributing to trAIner! This guide will help you get started.
+Thank you for your interest in contributing! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
 
-## Development Setup
+## Getting Started
 
-This tool is built with [Google Agent Development Kit](https://google.github.io/adk-docs/) (ADK).
+### Quick Setup
 
-### Prerequisites
-
-- Python
-- Git
-- A Google Gemini API key
-- Strava account and API credentials
-
-### Installation
-
-1. Fork and clone the repository:
+1. **Fork and clone:**
    ```bash
    git clone https://github.com/yourusername/trainer.git
    cd trainer
    ```
 
-2. Create a virtual environment:
+2. **Install dependencies:**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install in development mode:
-   ```bash
+   source venv/bin/activate  # Windows: venv\Scripts\activate
    pip install -e ".[dev]"
    ```
 
-4. Set up environment variables:
+3. **Configure environment:**
    ```bash
    cp .env.example .env
-   # Edit .env with your API keys
+   # Add your GEMINI_API_KEY for testing
    ```
 
-## Development Workflow
-
-### Code Style
-
-We use `ruff` for linting and formatting, and `mypy` for type checking.
-
-**Before committing:**
-
-```bash
-# Format code
-ruff format .
-
-# Check for issues
-ruff check .
-
-# Type check
-mypy src/trainer
-```
-
-**Configuration:**
-- Line length: 100 characters
-- Target: Python 3.13
-- Style: See `pyproject.toml` for full ruff configuration
-
-### Testing
-
-We use `pytest` with async support.
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=trainer --cov-report=html
-
-# Run specific test types
-pytest tests/unit
-pytest tests/integration
-
-# Run specific test file
-pytest tests/unit/test_formatters.py -v
-```
-
-**Writing Tests:**
-- Place unit tests in `tests/unit/`
-- Place integration tests in `tests/integration/`
-- Use descriptive test names: `test_<function>_<scenario>_<expected_result>`
-- Use fixtures for common setup
-- Mock external services (Strava MCP, Gemini API)
-
-### Project Structure
-
-```
-src/trainer/
-├── agents/           # AI agent implementations
-│   └── trainer_agent.py
-├── models/           # Pydantic data models
-├── tools/            # MCP client integrations
-├── utils/            # Helper functions
-│   ├── config.py     # Configuration management
-│   └── formatters.py # Display formatters
-└── __main__.py       # CLI entry point
-```
-
-### Making Changes
-
-1. **Create a feature branch:**
+4. **Verify setup:**
    ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Make your changes:**
-   - Write code following the style guide
-   - Add tests for new functionality
-   - Update documentation as needed
-
-3. **Run quality checks:**
-   ```bash
-   ruff format .
-   ruff check .
-   mypy src/trainer
    pytest
    ```
 
-4. **Commit your changes:**
+For detailed development setup, see [Developer Guide](docs/developers.md).
+
+## How to Contribute
+
+### Reporting Issues
+
+- **Bug reports**: Include steps to reproduce, expected vs actual behavior
+- **Feature requests**: Describe the use case and proposed solution
+- **Questions**: Use GitHub Discussions for general questions
+
+### Code Contributions
+
+1. **Find or create an issue** to discuss your changes
+2. **Create a feature branch:**
    ```bash
-   git add .
-   git commit -m "feat: add your feature description"
+   git checkout -b feat/your-feature
    ```
-
-   **Commit message format:**
-   - `feat:` - New feature
-   - `fix:` - Bug fix
-   - `docs:` - Documentation changes
-   - `test:` - Test additions/changes
-   - `refactor:` - Code refactoring
-   - `chore:` - Maintenance tasks
-
-5. **Push and create a pull request:**
+3. **Make your changes** (see [Developer Guide](docs/developers.md))
+4. **Test your changes:**
    ```bash
-   git push origin feature/your-feature-name
+   pytest
+   ruff format . && ruff check .
+   mypy src/trainer
    ```
+5. **Commit using conventional commits:**
+   ```bash
+   git commit -m "feat: add workout comparison feature"
+   ```
+6. **Push and open a pull request**
 
-## Areas for Contribution
+### Commit Message Format
 
-### High Priority
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation only
+- `test:` - Adding/updating tests
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+- `ci:` - CI/CD changes
+
+Examples:
+```
+feat: add support for cycling workouts
+fix: correct pace calculation for intervals
+docs: update installation guide
+test: add tests for training plan generation
+```
+
+## Pull Request Guidelines
+
+### Before Submitting
+
+- ✅ All tests pass (`pytest`)
+- ✅ Code is formatted (`ruff format .`)
+- ✅ No linting errors (`ruff check .`)
+- ✅ Type checking passes (`mypy src/trainer`)
+- ✅ Documentation is updated if needed
+- ✅ Tests added for new features
+
+### PR Description
+
+Include:
+- **What**: Brief description of changes
+- **Why**: Motivation and context
+- **How**: Implementation approach (if complex)
+- **Testing**: How you tested the changes
+- **Screenshots**: For UI changes
+
+### Review Process
+
+1. Automated checks run (CI/CD)
+2. Maintainer reviews code
+3. Address feedback if needed
+4. Approved PRs are merged
+
+## What to Contribute
+
+### 🔥 High Priority
+
 - Complete TrainerAgent implementation
 - Strava MCP integration
-- Workout analysis logic
+- Workout analysis features
 - Training plan generation
-- Error handling and validation
+- Error handling improvements
 
-### Documentation
+### 📚 Documentation
+
 - Usage examples
-- API documentation
 - Tutorial guides
-- Architecture diagrams
+- API documentation
+- Video walkthroughs
 
-### Testing
+### 🧪 Testing
+
 - Increase test coverage
-- Add integration tests
-- Add edge case tests
+- Integration tests
+- Edge case testing
+- Performance testing
 
-### Features
-- Additional sports support
-- Advanced analytics
-- Visualization tools
-- Export functionality
+### ✨ Features
 
-## Code Review Process
+Looking for ideas? Check out:
+- [Good First Issues](https://github.com/yourusername/trainer/labels/good%20first%20issue)
+- [Feature Requests](https://github.com/yourusername/trainer/labels/enhancement)
+- [Help Wanted](https://github.com/yourusername/trainer/labels/help%20wanted)
 
-1. Ensure all tests pass
-2. Ensure code quality checks pass
-3. Update relevant documentation
-4. Submit PR with clear description
-5. Address reviewer feedback
-6. Squash commits if requested
+## Code Style
+
+We follow these conventions:
+
+- **Python**: PEP 8 via ruff (100 char line length)
+- **Type hints**: Required for all functions
+- **Docstrings**: Google style for public APIs
+- **Async**: Use async/await for I/O operations
+- **Imports**: Sorted with ruff
+
+Example:
+```python
+async def analyze_workout(workout_id: str) -> WorkoutAnalysis:
+    """Analyze a workout and provide feedback.
+
+    Args:
+        workout_id: Strava activity ID
+
+    Returns:
+        Detailed workout analysis with recommendations
+    """
+    # Implementation
+```
+
+## Testing Requirements
+
+- **Unit tests** for all new functions
+- **Integration tests** for API interactions
+- **Mocks** for external services (Gemini, Strava)
+- **Coverage**: Aim for >80% overall
+
+See [Testing Guide](docs/testing.md) for details.
+
+## Community Guidelines
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Help newcomers
+- Stay on topic in discussions
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md)
+
+## Development Resources
+
+- [Developer Guide](docs/developers.md) - Detailed development workflows
+- [Architecture Overview](docs/architecture.md) - System design
+- [Testing Guide](docs/testing.md) - Testing best practices
+- [MCP Integration](docs/mcp-integration.md) - Strava connection
+
+## Recognition
+
+Contributors are recognized in:
+- GitHub contributors page
+- Release notes
+- Project acknowledgments
 
 ## Questions?
 
-- Open an issue for bugs or feature requests
-- Start a discussion for questions or ideas
-- Check existing issues before creating new ones
+- **General questions**: [GitHub Discussions](https://github.com/yourusername/trainer/discussions)
+- **Bug reports**: [GitHub Issues](https://github.com/yourusername/trainer/issues)
+- **Security**: Email security@yourproject.com
 
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+Thank you for making trAIner better! 🏃‍♂️

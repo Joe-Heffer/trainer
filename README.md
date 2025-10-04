@@ -4,69 +4,56 @@ An open-source agentic AI personal trainer for fitness and health that's powered
 
 ## Features
 
-- **AI-Powered Coaching**: Leverages large language models (LLMs) through ADK for intelligent training advice
-- **Strava Integration**: Connects to your Strava data via MCP (Model Context Protocol)
-- **Workout Analysis**: Get detailed feedback on your activities with personalized recommendations
-- **Training Plans**: Generate customized training plans based on your goals and fitness level
-- **Conversational Interface**: Chat with your AI trainer about training, recovery, and performance
-
-## Prerequisites
-
-- Python 3.13+
-- Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
-- Strava account and API credentials ([register an app](https://www.strava.com/settings/api))
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/trainer.git
-   cd trainer
-   ```
-
-2. Install the package:
-   ```bash
-   pip install -e .
-   ```
-
-3. Install development dependencies (optional):
-   ```bash
-   pip install -e ".[dev]"
-   ```
-
-4. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your API keys
-   ```
-
-5. Configure the Strava MCP server:
-   - Update `mcp_config.json` with your Strava credentials
-   - Start the MCP server (see [MCP documentation](https://modelcontextprotocol.io/))
+- **AI-Powered Coaching**: Get intelligent training advice powered by advanced LLMs
+- **Strava Integration**: Automatically analyze your workouts from Strava
+- **Workout Analysis**: Receive detailed feedback with personalized recommendations
+- **Training Plans**: Generate customized plans based on your goals and fitness level
+- **Conversational Interface**: Chat naturally with your AI trainer about training, recovery, and performance
 
 ## Quick Start
 
-Run the interactive CLI:
+### Prerequisites
 
+- Python 3.13+
+- Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
+- Strava account ([sign up](https://www.strava.com/register))
+
+### Installation
+
+1. **Clone and install:**
+   ```bash
+   git clone https://github.com/yourusername/trainer.git
+   cd trainer
+   pip install -e .
+   ```
+
+2. **Configure API keys:**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your GEMINI_API_KEY
+   ```
+
+3. **Set up Strava connection:**
+   - Register a Strava app at [strava.com/settings/api](https://www.strava.com/settings/api)
+   - Add credentials to `mcp_config.json`
+   - See [MCP Integration Guide](docs/mcp-integration.md) for details
+
+### Usage
+
+**Interactive CLI:**
 ```bash
-# After installation
 trainer
-
-# Or without installation
-python -m trainer
 ```
 
-For programmatic usage, see the `examples/` directory:
-
+**Programmatic:**
 ```python
 from trainer.agents.trainer_agent import TrainerAgent
 
-# Initialize the trainer
 agent = TrainerAgent()
 await agent.initialize()
 
 # Analyze a workout
-analysis = await agent.analyze_workout("your_activity_id")
+analysis = await agent.analyze_workout("activity_id")
 
 # Create a training plan
 plan = await agent.create_training_plan(
@@ -75,41 +62,49 @@ plan = await agent.create_training_plan(
 )
 ```
 
-## Project Structure
+## Example Conversation
 
 ```
-trainer/
-├── src/trainer/
-│   ├── agents/          # AI agent implementations
-│   ├── models/          # Data models (Pydantic)
-│   ├── tools/           # MCP integrations (Strava)
-│   └── utils/           # Utilities and helpers
-├── tests/
-│   ├── unit/            # Unit tests
-│   └── integration/     # Integration tests
-├── examples/            # Example scripts
-└── pyproject.toml       # Project configuration
-```
+You: How was my last run?
 
-## Development
+Trainer: Your 10K run this morning was solid! You maintained a consistent
+pace of 5:30/km with good heart rate control in zone 2. Your cadence of
+178 spm is excellent. Consider adding some hills next time to build strength.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development guidelines.
+You: Create a 12-week plan to run a marathon
 
-Quick commands:
-```bash
-# Run tests
-pytest
-
-# Lint and format
-ruff check . && ruff format .
-
-# Type checking
-mypy src/trainer
+Trainer: I'll create a progressive 12-week marathon plan building from your
+current fitness level...
 ```
 
 ## Documentation
 
-- [Installation Guide](docs/installation.md)
-- [Architecture Overview](docs/architecture.md)
-- [MCP Integration](docs/mcp-integration.md)
-- [Testing Guide](docs/testing.md)
+**For Users:**
+- [Installation Guide](docs/installation.md) - Detailed setup instructions
+- [MCP Integration](docs/mcp-integration.md) - Connecting to Strava
+
+**For Contributors:**
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
+- [Developer Guide](docs/developers.md) - Development setup and workflows
+- [Architecture](docs/architecture.md) - System design and components
+- [Testing Guide](docs/testing.md) - Writing and running tests
+
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/trainer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/trainer/discussions)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Acknowledgments
+
+Built with:
+- [Google Agent Development Kit (ADK)](https://google.github.io/adk-docs/)
+- [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
+- [Strava API](https://developers.strava.com/)
