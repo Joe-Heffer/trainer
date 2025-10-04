@@ -19,13 +19,18 @@ Thank you for your interest in contributing! Whether you're fixing bugs, adding 
    pip install -e ".[dev]"
    ```
 
-3. **Configure environment:**
+3. **Set up pre-commit hooks:**
+   ```bash
+   pre-commit install
+   ```
+
+4. **Configure environment:**
    ```bash
    cp .env.example .env
    # Add your GEMINI_API_KEY for testing
    ```
 
-4. **Verify setup:**
+5. **Verify setup:**
    ```bash
    pytest
    ```

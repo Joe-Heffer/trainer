@@ -37,6 +37,9 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # Install in editable mode with dev dependencies
 pip install -e ".[dev]"
 
+# Set up pre-commit hooks
+pre-commit install
+
 # Set up environment
 cp .env.example .env
 # Edit .env with your credentials
@@ -210,7 +213,26 @@ def test_my_function_edge_case():
 
 ### 4. Run Quality Checks
 
-Before committing:
+**Automatic checks with pre-commit** (recommended):
+
+Pre-commit hooks automatically run on every commit:
+- Format code with ruff
+- Lint code with ruff
+- Type check with mypy
+- Check for common issues (trailing whitespace, merge conflicts, etc.)
+
+```bash
+# Hooks run automatically on git commit
+git commit -m "feat: my changes"
+
+# Run manually on all files
+pre-commit run --all-files
+
+# Skip hooks if needed (not recommended)
+git commit --no-verify
+```
+
+**Manual checks**:
 
 ```bash
 # Format code
@@ -227,13 +249,6 @@ pytest
 
 # Check coverage
 pytest --cov=trainer --cov-report=term-missing
-```
-
-**Pre-commit hook** (optional):
-```bash
-# .git/hooks/pre-commit
-#!/bin/bash
-ruff format . && ruff check . && mypy src/trainer && pytest
 ```
 
 ### 5. Commit Changes
