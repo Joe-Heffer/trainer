@@ -1,3 +1,6 @@
+[![Continuous integration](https://github.com/Joe-Heffer/trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/Joe-Heffer/trainer/actions/workflows/ci.yml)
+[![Dependabot Updates](https://github.com/Joe-Heffer/trainer/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Joe-Heffer/trainer/actions/workflows/dependabot/dependabot-updates)
+
 # trAIner
 
 An open-source agentic AI personal trainer for fitness and health that's powered by Strava data.
@@ -21,6 +24,7 @@ An open-source agentic AI personal trainer for fitness and health that's powered
 ### Installation
 
 1. **Clone and install:**
+
    ```bash
    git clone https://github.com/yourusername/trainer.git
    cd trainer
@@ -28,6 +32,7 @@ An open-source agentic AI personal trainer for fitness and health that's powered
    ```
 
 2. **Configure API keys:**
+
    ```bash
    cp .env.example .env
    # Edit .env and add your GEMINI_API_KEY
@@ -41,11 +46,13 @@ An open-source agentic AI personal trainer for fitness and health that's powered
 ### Usage
 
 **Interactive CLI:**
+
 ```bash
 trainer
 ```
 
 **Programmatic:**
+
 ```python
 from trainer.agents.trainer_agent import TrainerAgent
 
@@ -80,10 +87,12 @@ current fitness level...
 ## Documentation
 
 **For Users:**
+
 - [Installation Guide](docs/installation.md) - Detailed setup instructions
 - [MCP Integration](docs/mcp-integration.md) - Connecting to Strava
 
 **For Contributors:**
+
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 - [Developer Guide](docs/developers.md) - Development setup and workflows
 - [Architecture](docs/architecture.md) - System design and components
@@ -105,6 +114,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 Built with:
+
 - [Google Agent Development Kit (ADK)](https://google.github.io/adk-docs/)
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
 - [Strava API](https://developers.strava.com/)
