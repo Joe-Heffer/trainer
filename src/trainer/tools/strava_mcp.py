@@ -147,7 +147,7 @@ async def get_athlete_profile() -> dict[str, Any]:
             }
 
 
-async def get_athlete_stats() -> dict[str, Any]:
+async def get_athlete_stats(athlete_id: int) -> dict[str, Any]:
     """Get athlete statistics and recent performance data from Strava.
 
     Retrieves comprehensive statistics about the athlete including:
@@ -157,16 +157,21 @@ async def get_athlete_stats() -> dict[str, Any]:
     - Training volume metrics
     - Performance trends
 
+    Args:
+        athlete_id: The unique Strava athlete ID (obtain from get_athlete_profile first)
+
     Returns:
         Dictionary with status and athlete statistics data, or error message
     """
-    logger.info("Tool called: get_athlete_stats")
+    logger.info(f"Tool called: get_athlete_stats(athlete_id={athlete_id})")
 
     async with _mcp_lock:
         try:
             session = await _get_mcp_session()
 
-            result = await session.call_tool("get-athlete-stats", arguments={})
+            result = await session.call_tool(
+                "get-athlete-stats", arguments={"athleteId": athlete_id}
+            )
 
             return {
                 "status": "success",
