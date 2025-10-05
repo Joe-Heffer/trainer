@@ -6,6 +6,7 @@ import sys
 
 from trainer.agents.trainer_agent import TrainerAgent
 from trainer.utils.arguments import parse_arguments
+from trainer.utils.config import get_settings
 from trainer.utils.logging import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -13,17 +14,18 @@ logger = logging.getLogger(__name__)
 
 async def async_main() -> int:
     """Async main function that runs the trainer agent."""
+    # Load .env file for CLI usage (not done at import time for test speed)
+    get_settings(load_dotenv_file=True)
+
     setup_logging()
     logger.info("Starting trAIner CLI")
 
     print("🏃 trAIner - Your AI Personal Trainer")
     print("=" * 40)
 
-    agent = TrainerAgent()
-
     try:
-        logger.debug("Initializing agent")
-        await agent.initialize()
+        logger.debug("Creating agent")
+        agent = TrainerAgent()
         await agent.run_interactive()
 
     except Exception as e:

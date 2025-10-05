@@ -9,8 +9,14 @@ import pytest
 def mock_env_vars(monkeypatch):
     """Mock environment variables for all tests."""
     monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-12345")
-    monkeypatch.setenv("STRAVA_MCP_URL", "http://localhost:3000")
+    monkeypatch.setenv("STRAVA_MCP_PATH", "/tmp/fake/strava-mcp/dist/server.js")
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+
+    # Reset settings to pick up test env vars
+    import trainer.utils.config
+
+    trainer.utils.config._settings = None
+    trainer.utils.config.settings = trainer.utils.config.get_settings()
 
 
 @pytest.fixture

@@ -2,15 +2,14 @@
 
 import logging
 
-from trainer.utils.config import load_config
+from trainer.utils.config import settings
 
 logger = logging.getLogger(__name__)
 
 
 def setup_logging() -> None:
     """Configure logging for the application."""
-    config = load_config()
-    log_level = getattr(logging, config.get("log_level", "INFO").upper())
+    log_level = getattr(logging, settings.log_level.upper())
 
     # Configure logging format
     logging.basicConfig(
