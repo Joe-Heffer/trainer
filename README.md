@@ -5,7 +5,7 @@
 
 An open-source agentic AI personal trainer for fitness and health that's powered by Strava data.
 
-![Personal trainer app with charts](C:\Users\joesh\trainer\images\athena.jpg)
+![Personal trainer app with charts](images/athena.jpg)
 
 ## Features
 

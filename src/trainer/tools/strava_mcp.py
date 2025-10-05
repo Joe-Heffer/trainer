@@ -1,0 +1,242 @@
+"""Strava integration using MCP (Model Context Protocol)."""
+
+import logging
+from typing import Any
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+from trainer.utils.config import settings
+
+logger = logging.getLogger(__name__)
+
+# Global MCP session
+_mcp_session: ClientSession | None = None
+
+
+async def _get_mcp_session() -> ClientSession:
+    """Get or create MCP client session for Strava server.
+
+    Returns:
+        Active MCP client session
+    """
+    global _mcp_session
+
+    if _mcp_session is not None:
+        return _mcp_session
+
+    # Get Strava MCP server path from environment
+    strava_mcp_path = settings.strava_mcp_path
+    if not strava_mcp_path:
+        raise ValueError(
+            "STRAVA_MCP_PATH not configured. Set the path to the strava-mcp dist/server.js file."
+        )
+
+    logger.info(f"Connecting to Strava MCP server: {strava_mcp_path}")
+
+    # Create server parameters for the Strava MCP server
+    server_params = StdioServerParameters(
+        command="node",
+        args=[strava_mcp_path],
+        env=None,  # Server reads from its own .env file
+    )
+
+    # Create and store the session
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            _mcp_session = session
+            logger.info("MCP session initialized successfully")
+            return session
+
+
+async def get_recent_activities(per_page: int = 10) -> dict[str, Any]:
+    """Get recent workout activities from Strava.
+
+    Retrieves the athlete's most recent activities with details including:
+    - Activity type (run, ride, swim, etc.)
+    - Distance and duration
+    - Pace/speed metrics
+    - Heart rate data if available
+    - Elevation gain
+    - Timestamp
+
+    Args:
+        per_page: Number of activities to retrieve per page (default: 10, max: 200)
+
+    Returns:
+        Dictionary with status and list of recent activities, or error message
+    """
+    logger.info(f"Tool called: get_recent_activities(per_page={per_page})")
+
+    try:
+        session = await _get_mcp_session()
+
+        # Call the MCP tool
+        result = await session.call_tool(
+            "get-recent-activities",
+            arguments={"perPage": per_page} if per_page != 10 else {},
+        )
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching recent activities: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve recent activities: {str(e)}",
+        }
+
+
+async def get_athlete_profile() -> dict[str, Any]:
+    """Get the authenticated athlete's profile information.
+
+    Returns:
+        Dictionary with status and athlete profile data, or error message
+    """
+    logger.info("Tool called: get_athlete_profile")
+
+    try:
+        session = await _get_mcp_session()
+
+        result = await session.call_tool("get-athlete-profile", arguments={})
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching athlete profile: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve athlete profile: {str(e)}",
+        }
+
+
+async def get_athlete_stats() -> dict[str, Any]:
+    """Get athlete statistics and recent performance data from Strava.
+
+    Retrieves comprehensive statistics about the athlete including:
+    - Recent activity summary (last 4 weeks)
+    - Year-to-date totals
+    - All-time totals
+    - Training volume metrics
+    - Performance trends
+
+    Returns:
+        Dictionary with status and athlete statistics data, or error message
+    """
+    logger.info("Tool called: get_athlete_stats")
+
+    try:
+        session = await _get_mcp_session()
+
+        result = await session.call_tool("get-athlete-stats", arguments={})
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching athlete stats: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve athlete statistics: {str(e)}",
+        }
+
+
+async def get_activity_details(activity_id: str) -> dict[str, Any]:
+    """Get detailed information about a specific Strava activity.
+
+    Retrieves comprehensive details for a single workout including:
+    - Full activity metrics (distance, duration, pace, speed)
+    - Heart rate zones and analysis
+    - Power data (for cycling/running with power meter)
+    - Elevation profile
+    - Splits and laps
+    - GPS data and route
+
+    Args:
+        activity_id: The Strava activity ID to analyze
+
+    Returns:
+        Dictionary with status and detailed activity data, or error message
+    """
+    logger.info(f"Tool called: get_activity_details(activity_id={activity_id})")
+
+    try:
+        session = await _get_mcp_session()
+
+        result = await session.call_tool(
+            "get-activity-details",
+            arguments={"activityId": activity_id},
+        )
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching activity details for {activity_id}: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve activity details: {str(e)}",
+        }
+
+
+async def list_athlete_clubs() -> dict[str, Any]:
+    """List all clubs the athlete has joined.
+
+    Returns:
+        Dictionary with status and list of clubs, or error message
+    """
+    logger.info("Tool called: list_athlete_clubs")
+
+    try:
+        session = await _get_mcp_session()
+
+        result = await session.call_tool("list-athlete-clubs", arguments={})
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching athlete clubs: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve athlete clubs: {str(e)}",
+        }
+
+
+async def get_segment(segment_id: str) -> dict[str, Any]:
+    """Get details for a specific Strava segment.
+
+    Args:
+        segment_id: The Strava segment ID
+
+    Returns:
+        Dictionary with status and segment details, or error message
+    """
+    logger.info(f"Tool called: get_segment(segment_id={segment_id})")
+
+    try:
+        session = await _get_mcp_session()
+
+        result = await session.call_tool(
+            "get-segment",
+            arguments={"segmentId": segment_id},
+        )
+
+        return {
+            "status": "success",
+            "data": result.content,
+        }
+    except Exception as e:
+        logger.error(f"Error fetching segment {segment_id}: {e}")
+        return {
+            "status": "error",
+            "error_message": f"Failed to retrieve segment: {str(e)}",
+        }
