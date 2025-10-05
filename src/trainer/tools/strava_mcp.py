@@ -1,5 +1,6 @@
 """Strava integration using MCP (Model Context Protocol)."""
 
+import asyncio
 import logging
 from typing import Any
 
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 _mcp_client_context = None
 _mcp_session_context = None
 _mcp_session: ClientSession | None = None
+_mcp_lock = asyncio.Lock()  # Lock to prevent concurrent MCP calls
 
 
 async def close_mcp_session() -> None:
@@ -97,25 +99,26 @@ async def get_recent_activities(per_page: int) -> dict[str, Any]:
     """
     logger.info(f"Tool called: get_recent_activities(per_page={per_page})")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        # Call the MCP tool
-        result = await session.call_tool(
-            "get-recent-activities",
-            arguments={"perPage": per_page},
-        )
+            # Call the MCP tool
+            result = await session.call_tool(
+                "get-recent-activities",
+                arguments={"perPage": per_page},
+            )
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching recent activities: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve recent activities: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching recent activities: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve recent activities: {str(e)}",
+            }
 
 
 async def get_athlete_profile() -> dict[str, Any]:
@@ -126,21 +129,22 @@ async def get_athlete_profile() -> dict[str, Any]:
     """
     logger.info("Tool called: get_athlete_profile")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        result = await session.call_tool("get-athlete-profile", arguments={})
+            result = await session.call_tool("get-athlete-profile", arguments={})
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching athlete profile: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve athlete profile: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching athlete profile: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve athlete profile: {str(e)}",
+            }
 
 
 async def get_athlete_stats() -> dict[str, Any]:
@@ -158,21 +162,22 @@ async def get_athlete_stats() -> dict[str, Any]:
     """
     logger.info("Tool called: get_athlete_stats")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        result = await session.call_tool("get-athlete-stats", arguments={})
+            result = await session.call_tool("get-athlete-stats", arguments={})
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching athlete stats: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve athlete statistics: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching athlete stats: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve athlete statistics: {str(e)}",
+            }
 
 
 async def get_activity_details(activity_id: str) -> dict[str, Any]:
@@ -194,24 +199,25 @@ async def get_activity_details(activity_id: str) -> dict[str, Any]:
     """
     logger.info(f"Tool called: get_activity_details(activity_id={activity_id})")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        result = await session.call_tool(
-            "get-activity-details",
-            arguments={"activityId": activity_id},
-        )
+            result = await session.call_tool(
+                "get-activity-details",
+                arguments={"activityId": activity_id},
+            )
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching activity details for {activity_id}: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve activity details: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching activity details for {activity_id}: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve activity details: {str(e)}",
+            }
 
 
 async def list_athlete_clubs() -> dict[str, Any]:
@@ -222,21 +228,22 @@ async def list_athlete_clubs() -> dict[str, Any]:
     """
     logger.info("Tool called: list_athlete_clubs")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        result = await session.call_tool("list-athlete-clubs", arguments={})
+            result = await session.call_tool("list-athlete-clubs", arguments={})
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching athlete clubs: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve athlete clubs: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching athlete clubs: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve athlete clubs: {str(e)}",
+            }
 
 
 async def get_segment(segment_id: str) -> dict[str, Any]:
@@ -250,21 +257,22 @@ async def get_segment(segment_id: str) -> dict[str, Any]:
     """
     logger.info(f"Tool called: get_segment(segment_id={segment_id})")
 
-    try:
-        session = await _get_mcp_session()
+    async with _mcp_lock:
+        try:
+            session = await _get_mcp_session()
 
-        result = await session.call_tool(
-            "get-segment",
-            arguments={"segmentId": segment_id},
-        )
+            result = await session.call_tool(
+                "get-segment",
+                arguments={"segmentId": segment_id},
+            )
 
-        return {
-            "status": "success",
-            "data": result.content,
-        }
-    except Exception as e:
-        logger.error(f"Error fetching segment {segment_id}: {e}")
-        return {
-            "status": "error",
-            "error_message": f"Failed to retrieve segment: {str(e)}",
-        }
+            return {
+                "status": "success",
+                "data": result.content,
+            }
+        except Exception as e:
+            logger.error(f"Error fetching segment {segment_id}: {e}")
+            return {
+                "status": "error",
+                "error_message": f"Failed to retrieve segment: {str(e)}",
+            }
