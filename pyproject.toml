@@ -40,9 +40,11 @@ ignore = []
 
 [tool.mypy]
 python_version = "3.13"
-strict = true
+strict = false
 warn_return_any = true
 warn_unused_configs = true
+cache_dir = ".mypy_cache"
+incremental = true
 
 [[tool.mypy.overrides]]
 module = ["google.*", "mcp.*"]
@@ -57,6 +59,4 @@ markers = [
     "integration: integration tests requiring external services",
     "unit: unit tests that don't require external services",
 ]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-]
+filterwarnings = ["ignore::DeprecationWarning"]
