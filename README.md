@@ -5,7 +5,7 @@
 
 An open-source agentic AI personal trainer for fitness and health that's powered by Strava data.
 
-![Personal trainer](images/athena.jpg)
+![Personal trainer](images/banner.jpg)
 
 ## Features
 
@@ -53,8 +53,15 @@ An open-source agentic AI personal trainer for fitness and health that's powered
    cd ../trainer
    cp .env.example .env
    # Edit .env and add:
-   # - GEMINI_API_KEY: Your Google Gemini API key (https://aistudio.google.com/apikey)
+   # - GOOGLE_API_KEY: Your Google Gemini API key (https://aistudio.google.com/apikey)
    # - STRAVA_MCP_PATH: Absolute path to strava-mcp/dist/server.js
+   ```
+
+   Example `.env`:
+   ```bash
+   GOOGLE_API_KEY=your_gemini_api_key_here
+   STRAVA_MCP_PATH=/absolute/path/to/strava-mcp/dist/server.js
+   LOG_LEVEL=WARNING
    ```
 
 ## Usage
@@ -92,16 +99,24 @@ plan = await agent.create_training_plan(
 ## Example Conversation
 
 ```
-You: How was my last run?
+💪> What should I do to improve my cycling performance?
 
-Trainer: Your 10K run this morning was solid! You maintained a consistent
-pace of 5:30/km with good heart rate control in zone 2. Your cadence of
-178 spm is excellent. Consider adding some hills next time to build strength.
+Based on your Strava data, here's what I see:
+- You've been cycling consistently with multiple rides per week
+- Your distances vary from 7km to 80km
+- You're incorporating regular weight training which supports cycling performance
 
-You: Create a 12-week plan to run a marathon
+Recommendations:
+1. **Structured Training Zones:** Add interval training to improve VO2 max
+2. **Progressive Overload:** Gradually increase ride duration and intensity
+3. **Strength Training:** Continue your weight training - it's great for power
+4. **Recovery:** Ensure adequate rest between hard efforts
+5. **Nutrition:** Focus on pre-ride and during-ride fueling for longer sessions
 
-Trainer: I'll create a progressive 12-week marathon plan building from your
-current fitness level...
+Would you like me to create a specific training plan for your cycling goals?
+
+💪> quit
+👋 Thanks for training with trAIner!
 ```
 
 ## Documentation
