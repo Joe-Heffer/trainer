@@ -43,18 +43,24 @@ An open-source agentic AI personal trainer for fitness and health that's powered
    - Add credentials to `mcp_config.json`
    - See [MCP Integration Guide](docs/mcp-integration.md) for details
 
-### Usage
+## Usage
 
-**Interactive CLI:**
+### Command line
 
 ```bash
 trainer
 ```
 
-**Programmatic:**
+For the arguments:
+
+```bash
+trainer --help
+```
+
+### Programmatic
 
 ```python
-from trainer.agents.trainer_agent import TrainerAgent
+from trainer import TrainerAgent
 
 agent = TrainerAgent()
 await agent.initialize()

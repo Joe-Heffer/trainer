@@ -69,3 +69,32 @@ class TrainerAgent:
         logger.info(f"Creating {weeks}-week training plan for goal: {goal}")
         # TODO: Implement training plan generation
         raise NotImplementedError
+
+    async def run_interactive(self) -> None:
+        """Run the agent in interactive mode with user input loop."""
+        logger.info("Starting interactive mode")
+        print("\nAgent initialized. Type 'quit' or 'exit' to stop.\n")
+
+        while True:
+            try:
+                user_input = input("You: ").strip()
+
+                if user_input.lower() in ("quit", "exit", "q"):
+                    logger.info("User requested exit")
+                    print("\n👋 Thanks for training with trAIner!")
+                    break
+
+                if not user_input:
+                    continue
+
+                logger.debug(f"User input: {user_input}")
+                response = await self.process_message(user_input)
+                print(f"\nTrainer: {response}\n")
+
+            except KeyboardInterrupt:
+                logger.info("Received keyboard interrupt")
+                print("\n\n👋 Thanks for training with trAIner!")
+                break
+            except EOFError:
+                logger.debug("Received EOF")
+                break
