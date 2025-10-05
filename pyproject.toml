@@ -23,6 +23,7 @@ dev = [
     "ruff>=0.3.0",
     "mypy>=1.8.0",
     "pre-commit>=3.5.0",
+    "types-python-dotenv>=1.0.0",
 ]
 
 [build-system]
@@ -42,6 +43,10 @@ python_version = "3.13"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["google.*", "mcp.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
