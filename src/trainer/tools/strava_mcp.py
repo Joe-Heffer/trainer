@@ -12,7 +12,30 @@ logger = logging.getLogger(__name__)
 
 # Global MCP client and session - kept alive for reuse
 _mcp_client_context = None
+_mcp_session_context = None
 _mcp_session: ClientSession | None = None
+
+
+async def close_mcp_session() -> None:
+    """Close the MCP session and cleanup resources."""
+    global _mcp_client_context, _mcp_session_context, _mcp_session
+
+    if _mcp_session_context:
+        try:
+            await _mcp_session_context.__aexit__(None, None, None)
+        except Exception:
+            pass
+        _mcp_session_context = None
+
+    if _mcp_client_context:
+        try:
+            await _mcp_client_context.__aexit__(None, None, None)
+        except Exception:
+            pass
+        _mcp_client_context = None
+
+    _mcp_session = None
+    logger.info("MCP session closed")
 
 
 async def _get_mcp_session() -> ClientSession:
@@ -21,7 +44,7 @@ async def _get_mcp_session() -> ClientSession:
     Returns:
         Active MCP client session
     """
-    global _mcp_client_context, _mcp_session
+    global _mcp_client_context, _mcp_session_context, _mcp_session
 
     if _mcp_session is not None:
         return _mcp_session
@@ -47,8 +70,8 @@ async def _get_mcp_session() -> ClientSession:
     _mcp_client_context = stdio_client(server_params)
     read, write = await _mcp_client_context.__aenter__()
 
-    session_context = ClientSession(read, write)
-    _mcp_session = await session_context.__aenter__()
+    _mcp_session_context = ClientSession(read, write)
+    _mcp_session = await _mcp_session_context.__aenter__()
     await _mcp_session.initialize()
 
     logger.info("MCP session initialized successfully")

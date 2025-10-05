@@ -21,5 +21,7 @@ def setup_logging() -> None:
     # Set third-party library log levels to WARNING to reduce noise
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("google").setLevel(logging.WARNING)
+    logging.getLogger("google_genai").setLevel(logging.ERROR)  # Suppress function_call warnings
+    logging.getLogger("google_adk").setLevel(logging.ERROR)  # Suppress ADK warnings
 
     logger.info(f"Logging configured at {logging.getLevelName(log_level)} level")

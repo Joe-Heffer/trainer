@@ -32,6 +32,14 @@ async def async_main() -> int:
         logger.error(f"Error occurred: {e}", exc_info=True)
         print(f"\n❌ Error: {e}", file=sys.stderr)
         return 1
+    finally:
+        # Cleanup MCP session
+        try:
+            from trainer.tools import close_mcp_session
+
+            await close_mcp_session()
+        except Exception:
+            pass
 
     logger.info("trAIner CLI shutting down")
     return 0

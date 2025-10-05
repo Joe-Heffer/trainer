@@ -100,9 +100,10 @@ Always ground your advice in the actual data from Strava when available.""",
                 session_id=self.session_id,
                 new_message=content,
             ):
-                # Extract text from model response events
-                if hasattr(event, "content") and event.content:
+                # Collect text from events with content
+                if event.content and event.content.parts:
                     for part in event.content.parts:
+                        # Collect text parts (part.text might be None even if the attribute exists)
                         if hasattr(part, "text") and part.text:
                             response_parts.append(part.text)
 
