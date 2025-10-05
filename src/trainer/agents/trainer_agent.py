@@ -64,7 +64,7 @@ Always ground your advice in the actual data from Strava when available.""",
 
         try:
             # Use the ADK agent to process the message
-            response = await self.agent.run(message)
+            response = await self.agent.run(message)  # type: ignore[attr-defined]
             return str(response.content)
         except Exception as e:
             logger.error(f"Error processing message: {e}")
