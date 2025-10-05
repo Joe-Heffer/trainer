@@ -19,7 +19,7 @@ An open-source agentic AI personal trainer for fitness and health that's powered
 
 ### Prerequisites
 
-- Python 3.13+
+- Python 3.10+
 - Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
 - Strava account ([sign up](https://www.strava.com/register))
 
