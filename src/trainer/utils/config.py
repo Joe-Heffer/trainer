@@ -34,6 +34,10 @@ def get_settings(load_dotenv_file: bool = False) -> Settings:
     """
     global _settings
 
+    # If load_dotenv_file is requested, reset settings to reload from .env
+    if load_dotenv_file:
+        _settings = None
+
     if _settings is None:
         # Only load .env file if explicitly requested (e.g., in CLI main)
         if load_dotenv_file:
@@ -45,10 +49,11 @@ def get_settings(load_dotenv_file: bool = False) -> Settings:
                 logger.debug(f".env file not found at {env_file}, using environment variables only")
 
         # Load from environment variables
+        # Use GOOGLE_API_KEY (standard Google SDK env var) or fall back to GEMINI_API_KEY
         _settings = Settings(
-            gemini_api_key=os.getenv("GEMINI_API_KEY"),
+            gemini_api_key=os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"),
             strava_mcp_path=os.getenv("STRAVA_MCP_PATH"),
-            log_level=os.getenv("LOG_LEVEL", "INFO"),
+            log_level=os.getenv("LOG_LEVEL", "WARNING"),
         )
 
     return _settings

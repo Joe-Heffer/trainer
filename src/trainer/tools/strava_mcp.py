@@ -6,11 +6,12 @@ from typing import Any
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from trainer.utils.config import settings
+from trainer.utils.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-# Global MCP session
+# Global MCP client and session - kept alive for reuse
+_mcp_client_context = None
 _mcp_session: ClientSession | None = None
 
 
@@ -20,12 +21,13 @@ async def _get_mcp_session() -> ClientSession:
     Returns:
         Active MCP client session
     """
-    global _mcp_session
+    global _mcp_client_context, _mcp_session
 
     if _mcp_session is not None:
         return _mcp_session
 
     # Get Strava MCP server path from environment
+    settings = get_settings()
     strava_mcp_path = settings.strava_mcp_path
     if not strava_mcp_path:
         raise ValueError(
@@ -41,16 +43,19 @@ async def _get_mcp_session() -> ClientSession:
         env=None,  # Server reads from its own .env file
     )
 
-    # Create and store the session
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize()
-            _mcp_session = session
-            logger.info("MCP session initialized successfully")
-            return session
+    # Create and store the session - keep context managers active
+    _mcp_client_context = stdio_client(server_params)
+    read, write = await _mcp_client_context.__aenter__()
+
+    session_context = ClientSession(read, write)
+    _mcp_session = await session_context.__aenter__()
+    await _mcp_session.initialize()
+
+    logger.info("MCP session initialized successfully")
+    return _mcp_session
 
 
-async def get_recent_activities(per_page: int = 10) -> dict[str, Any]:
+async def get_recent_activities(per_page: int) -> dict[str, Any]:
     """Get recent workout activities from Strava.
 
     Retrieves the athlete's most recent activities with details including:
@@ -62,7 +67,7 @@ async def get_recent_activities(per_page: int = 10) -> dict[str, Any]:
     - Timestamp
 
     Args:
-        per_page: Number of activities to retrieve per page (default: 10, max: 200)
+        per_page: Number of activities to retrieve per page (max: 200)
 
     Returns:
         Dictionary with status and list of recent activities, or error message
@@ -75,7 +80,7 @@ async def get_recent_activities(per_page: int = 10) -> dict[str, Any]:
         # Call the MCP tool
         result = await session.call_tool(
             "get-recent-activities",
-            arguments={"perPage": per_page} if per_page != 10 else {},
+            arguments={"perPage": per_page},
         )
 
         return {

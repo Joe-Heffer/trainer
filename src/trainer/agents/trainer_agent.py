@@ -1,11 +1,16 @@
 """Main trainer agent using Google ADK."""
 
 import logging
+import os
 from typing import Any
 
 from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
 
 from trainer.tools import get_athlete_profile, get_athlete_stats, get_recent_activities
+from trainer.utils.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +26,15 @@ class TrainerAgent:
         """
         logger.info(f"Initializing TrainerAgent with model: {model_name}")
 
+        # Set GOOGLE_API_KEY environment variable for Google ADK
+        settings = get_settings()
+        if settings.gemini_api_key:
+            os.environ["GOOGLE_API_KEY"] = settings.gemini_api_key
+        else:
+            logger.warning("No API key found in GOOGLE_API_KEY or GEMINI_API_KEY")
+
         # Create the ADK agent with tools and instructions
-        self.agent = Agent(
+        agent = Agent(
             name="personal_trainer",
             model=model_name,
             description=(
@@ -49,7 +61,13 @@ Be encouraging, data-driven, and specific in your recommendations. Consider:
 Always ground your advice in the actual data from Strava when available.""",
             tools=[get_athlete_profile, get_athlete_stats, get_recent_activities],
         )
-        logger.debug("TrainerAgent instance created with ADK Agent")
+
+        # Create the runner to manage agent execution
+        self.session_service = InMemorySessionService()
+        self.runner = Runner(app_name="trainer", agent=agent, session_service=self.session_service)
+        self.user_id = "default_user"
+        self.session_id = "default_session"
+        logger.debug("TrainerAgent instance created with ADK Agent and Runner")
 
     async def process_message(self, message: str) -> str:
         """Process a user message and return a response.
@@ -63,11 +81,34 @@ Always ground your advice in the actual data from Strava when available.""",
         logger.debug(f"Processing message: {message[:50]}...")
 
         try:
-            # Use the ADK agent to process the message
-            response = await self.agent.run(message)  # type: ignore[attr-defined]
-            return str(response.content)
+            # Ensure session exists
+            session = await self.session_service.get_session(
+                app_name="trainer", user_id=self.user_id, session_id=self.session_id
+            )
+            if not session:
+                await self.session_service.create_session(
+                    app_name="trainer", user_id=self.user_id, session_id=self.session_id
+                )
+
+            # Convert message to Content object
+            content = types.Content(role="user", parts=[types.Part(text=message)])
+
+            # Use the runner to process the message
+            response_parts = []
+            async for event in self.runner.run_async(
+                user_id=self.user_id,
+                session_id=self.session_id,
+                new_message=content,
+            ):
+                # Extract text from model response events
+                if hasattr(event, "content") and event.content:
+                    for part in event.content.parts:
+                        if hasattr(part, "text") and part.text:
+                            response_parts.append(part.text)
+
+            return "".join(response_parts) if response_parts else "No response generated"
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
+            logger.error(f"Error processing message: {e}", exc_info=True)
             return f"I encountered an error processing your message: {e}"
 
     async def analyze_workout(self, workout_id: str) -> dict[str, Any]:
@@ -130,11 +171,12 @@ Format the plan with week-by-week breakdown."""
         logger.info("Starting interactive mode")
         print("\n🏃 trAIner - Your AI Personal Trainer")
         print("Connected to Strava data via MCP")
+        print("Enter your question below.")
         print("Type 'quit' or 'exit' to stop.\n")
 
         while True:
             try:
-                user_input = input("You: ").strip()
+                user_input = input("💪> ").strip()
 
                 if user_input.lower() in ("quit", "exit", "q"):
                     logger.info("User requested exit")
