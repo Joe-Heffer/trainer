@@ -5,6 +5,8 @@
 
 An open-source agentic AI personal trainer for fitness and health that's powered by Strava data.
 
+![Personal trainer app with charts](C:\Users\joesh\trainer\images\athena.jpg)
+
 ## Features
 
 - **AI-Powered Coaching**: Get intelligent training advice powered by advanced LLMs
@@ -26,22 +28,34 @@ An open-source agentic AI personal trainer for fitness and health that's powered
 1. **Clone and install:**
 
    ```bash
-   git clone https://github.com/yourusername/trainer.git
+   git clone https://github.com/Joe-Heffer/trainer.git
    cd trainer
    pip install -e .
    ```
 
-2. **Configure API keys:**
+2. **Set up Strava MCP Server:**
 
    ```bash
-   cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY
+   # Clone and build the Strava MCP server
+   git clone https://github.com/r-huijts/strava-mcp.git
+   cd strava-mcp
+   npm install
+   npm run build
+
+   # Authenticate with Strava (creates API app and gets tokens)
+   npx tsx scripts/setup-auth.ts
+   # Follow the prompts to authorize with Strava
    ```
 
-3. **Set up Strava connection:**
-   - Register a Strava app at [strava.com/settings/api](https://www.strava.com/settings/api)
-   - Add credentials to `mcp_config.json`
-   - See [MCP Integration Guide](docs/mcp-integration.md) for details
+3. **Configure environment:**
+
+   ```bash
+   cd ../trainer
+   cp .env.example .env
+   # Edit .env and add:
+   # - GEMINI_API_KEY: Your Google Gemini API key (https://aistudio.google.com/apikey)
+   # - STRAVA_MCP_PATH: Absolute path to strava-mcp/dist/server.js
+   ```
 
 ## Usage
 
@@ -123,4 +137,5 @@ Built with:
 
 - [Google Agent Development Kit (ADK)](https://google.github.io/adk-docs/)
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
+- [r-huijts/strava-mcp](https://github.com/r-huijts/strava-mcp) - Strava MCP server
 - [Strava API](https://developers.strava.com/)

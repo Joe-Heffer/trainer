@@ -3,7 +3,9 @@
 import logging
 from typing import Any
 
-import google.genai
+from google.adk.agents import Agent
+
+from trainer.tools import get_athlete_profile, get_athlete_stats, get_recent_activities
 
 logger = logging.getLogger(__name__)
 
@@ -18,17 +20,36 @@ class TrainerAgent:
             model_name: The LLM to use for the agent
         """
         logger.info(f"Initializing TrainerAgent with model: {model_name}")
-        self.client = google.genai.Client()
-        self.model_name = model_name
-        self.agent = None
-        logger.debug("TrainerAgent instance created")
 
-    async def initialize(self) -> None:
-        """Initialize the agent with tools and configuration."""
-        logger.info("Initializing agent with tools and configuration")
-        # TODO: Connect Strava MCP tool
-        # TODO: Define agent instructions and behavior
-        raise NotImplementedError
+        # Create the ADK agent with tools and instructions
+        self.agent = Agent(
+            name="personal_trainer",
+            model=model_name,
+            description=(
+                "An AI personal trainer that analyzes Strava workout data "
+                "and provides personalized coaching and training plans."
+            ),
+            instruction="""You are an expert personal trainer and coach specializing in \
+endurance sports.
+
+You have access to the athlete's Strava data through tools. Use this data to:
+- Analyze workout performance and training patterns
+- Provide personalized coaching feedback
+- Identify areas for improvement
+- Create structured training plans
+- Answer questions about training, recovery, and performance
+
+Be encouraging, data-driven, and specific in your recommendations. Consider:
+- Training load and recovery
+- Progressive overload principles
+- Sport-specific training zones
+- Injury prevention
+- Goal-oriented planning
+
+Always ground your advice in the actual data from Strava when available.""",
+            tools=[get_athlete_profile, get_athlete_stats, get_recent_activities],
+        )
+        logger.debug("TrainerAgent instance created with ADK Agent")
 
     async def process_message(self, message: str) -> str:
         """Process a user message and return a response.
@@ -40,8 +61,14 @@ class TrainerAgent:
             Agent's response
         """
         logger.debug(f"Processing message: {message[:50]}...")
-        # TODO: Implement message processing with agent
-        raise NotImplementedError
+
+        try:
+            # Use the ADK agent to process the message
+            response = await self.agent.run(message)
+            return str(response.content)
+        except Exception as e:
+            logger.error(f"Error processing message: {e}")
+            return f"I encountered an error processing your message: {e}"
 
     async def analyze_workout(self, workout_id: str) -> dict[str, Any]:
         """Analyze a specific workout from Strava.
@@ -53,8 +80,21 @@ class TrainerAgent:
             Analysis and recommendations
         """
         logger.info(f"Analyzing workout: {workout_id}")
-        # TODO: Implement workout analysis
-        raise NotImplementedError
+
+        prompt = f"""Analyze the Strava activity with ID {workout_id}.
+
+Please provide:
+1. Summary of the workout (distance, duration, pace/power, heart rate)
+2. Performance assessment relative to recent training
+3. Strengths observed in this workout
+4. Areas for improvement
+5. Recovery recommendations
+6. How this fits into their overall training plan"""
+
+        response = await self.process_message(prompt)
+
+        # Return structured response
+        return {"workout_id": workout_id, "analysis": response, "status": "success"}
 
     async def create_training_plan(self, goal: str, weeks: int = 12) -> dict[str, Any]:
         """Create a personalized training plan.
@@ -67,13 +107,30 @@ class TrainerAgent:
             Training plan details
         """
         logger.info(f"Creating {weeks}-week training plan for goal: {goal}")
-        # TODO: Implement training plan generation
-        raise NotImplementedError
+
+        prompt = f"""Create a {weeks}-week personalized training plan for the following goal: {goal}
+
+Based on the athlete's recent Strava data:
+1. Assess their current fitness level and training history
+2. Design a progressive training plan with weekly structure
+3. Include specific workouts (easy runs, tempo, intervals, long runs/rides, etc.)
+4. Build in appropriate recovery
+5. Progressively increase training load
+6. Taper if relevant for the goal
+7. Provide weekly guidance and focus areas
+
+Format the plan with week-by-week breakdown."""
+
+        response = await self.process_message(prompt)
+
+        return {"goal": goal, "weeks": weeks, "plan": response, "status": "success"}
 
     async def run_interactive(self) -> None:
         """Run the agent in interactive mode with user input loop."""
         logger.info("Starting interactive mode")
-        print("\nAgent initialized. Type 'quit' or 'exit' to stop.\n")
+        print("\n🏃 trAIner - Your AI Personal Trainer")
+        print("Connected to Strava data via MCP")
+        print("Type 'quit' or 'exit' to stop.\n")
 
         while True:
             try:

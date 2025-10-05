@@ -1,6 +1,6 @@
 """Utility functions and helpers."""
 
-from .config import load_config
+from .config import settings
 from .formatters import format_distance, format_duration, format_pace
 
-__all__ = ["load_config", "format_duration", "format_distance", "format_pace"]
+__all__ = ["settings", "format_duration", "format_distance", "format_pace"]
