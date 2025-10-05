@@ -3,7 +3,7 @@ name = "trainer"
 version = "0.1.0"
 description = "An open-source agentic AI personal trainer for fitness and health"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "google-adk~=1.15.1",
     "mcp~=1.16.0",
@@ -59,3 +59,4 @@ markers = [
     "unit: unit tests that don't require external services",
 ]
 filterwarnings = ["ignore::DeprecationWarning"]
+
